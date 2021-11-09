@@ -5,4 +5,6 @@ Bottom::Bottom(int borderWidth, int windowHeight) : Object(borderWidth, windowHe
 	texture.loadFromFile("bottom.png");
 	setTexture(&texture);
 	setTextureRect(sf::IntRect(0, 0, BOTTOM_WIDTH, BOTTOM_HEIGHT));
+
+	isActive = false;
 }

@@ -1,6 +1,5 @@
 #include "Map.h"
 #include "Game.h"
-#include <iostream>
 
 Map::Map(int leftIndent, int topIndent) {
 	FillMap(leftIndent, topIndent);
@@ -30,7 +29,7 @@ void Map::FillMap(int leftIndent, int topIndent) {
 			case HelthNum::INF:
 				block = new Wall(curX, curY);
 				break;
-			case HelthNum::ONE:{ //50/50 accelerating block
+			case HelthNum::ONE:{
 				int chanceOfAccelerating = rand() % 100;
 
 				if (chanceOfAccelerating >= 80) {
@@ -40,18 +39,17 @@ void Map::FillMap(int leftIndent, int topIndent) {
 				else {
 					block = new OrdinaryBlock(curX, curY);
 
-					if (chanceOfBonus >= 60) {
+					if (chanceOfBonus >= 25) {
 						block->hasBonus = true;
 						++count2;
 					}
 				}
-
 				break;
 			}
 			default:
 				block = new BlockWithHealth(curX, curY, static_cast<int>(layout[i][j].helthNum));
 
-				if (chanceOfBonus >= 60) {
+				if (chanceOfBonus >= 10) {
 					block->hasBonus = true;
 					++count2;
 				}
@@ -64,9 +62,6 @@ void Map::FillMap(int leftIndent, int topIndent) {
 		}
 		curY += BLOCK_HEIGHT + VERTICAL_INTERVAL;
 	}
-	std::cout << count1 << std::endl;
-	std::cout << count2 << std::endl;
-
 }
 
 sf::FloatRect Map::GetRectangle() const {
@@ -79,6 +74,10 @@ sf::FloatRect Map::GetRectangle() const {
 sf::Vector2i Map::GetMapSize()const {
 	sf::Vector2i mapSize(NUM_OF_COLUMNS, NUM_OF_ROWS);
 	return mapSize;
+}
+
+HelthNum Map::CheckHelthNum(sf::Vector2i& positionOnMap) {
+	return layout[positionOnMap.y][positionOnMap.x].helthNum;
 }
 
 void Map::DisplayMap(sf::RenderWindow& window) {

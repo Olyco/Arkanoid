@@ -6,7 +6,7 @@ Paddle::Paddle(int windowWidth, int topIndent) : Object((windowWidth - PADDLE_WI
 	setTexture(&texture);
 	setTextureRect(sf::IntRect(0, 0, PADDLE_WIDTH, PADDLE_HEIGHT));
 
-	isSticky = true;
+	isSticky = false;
 }
 
 void Paddle::ProcessBordersCollision(int borderWidth, int windowWidth) {

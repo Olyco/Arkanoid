@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <iostream>
 
 int main(void){
 	srand(static_cast<unsigned int>(time(0)));
@@ -8,6 +9,6 @@ int main(void){
 		game.Run();
 		game.DrawInWindow();
 	}
-
+	
 	return 0;
 }

@@ -1,5 +1,4 @@
 #include "Ball.h"
-#include <iostream>
 
 void Ball::SetDefaultSpeed() {
 	speedProjection.x = DEFAULT_PROJ_MODUL;
@@ -13,11 +12,14 @@ Ball::Ball(int windowWidth, int bottom) :Object((windowWidth - BALL_SIZE) / 2, b
 	texture.loadFromFile("ball.png");
 	setTexture(&texture);
 	setTextureRect(sf::IntRect(0, 0, BALL_SIZE, BALL_SIZE));
+	SetDefaultSpeed();
 
+	isOnPaddle = true;
+	isActive = false;
 }
 
 void Ball::FollowPaddle(const Paddle* paddle) {
-	setPosition(sf::Vector2f(paddle->getPosition().x + (paddle->getSize().x - getSize().x) / 2 /*+ paddleCenterShift*/, paddle->getPosition().y - getSize().y));
+	setPosition(sf::Vector2f(paddle->getPosition().x + (paddle->getSize().x - getSize().x) / 2, paddle->getPosition().y - getSize().y));
 }
 
 void Ball::UpdatePosition(const Paddle* paddle, float time) {
@@ -28,7 +30,7 @@ void Ball::UpdatePosition(const Paddle* paddle, float time) {
 }
 
 void Ball::UpdateSpeed(sf::Vector2f& newSpeedProjection) {
-	if(abs(newSpeedProjection.x)<=MAX_PROJ_MODUL && abs(newSpeedProjection.y)<= MAX_PROJ_MODUL)
+	if (abs(newSpeedProjection.x) <= MAX_PROJ_MODUL && abs(newSpeedProjection.y) <= MAX_PROJ_MODUL && abs(newSpeedProjection.x) >= MIN_PROJ_MODUL && abs(newSpeedProjection.y) >= MIN_PROJ_MODUL)
 		speedProjection = newSpeedProjection;
 }
 
@@ -46,7 +48,7 @@ void Ball::ProcessBordersCollision(int borderWidth, int borderHeight, int window
 		ReverseSpeedX();
 	}
 	else if (bottom->isActive && GetLowerBorder() >= bottom->getPosition().y) {
-		//bottom->isActive = false;
+		bottom->isActive = false;
 		setPosition(sf::Vector2f(getPosition().x, static_cast<float>(bottom->getPosition().y - getSize().y)) );
 		ReverseSpeedY();
 	}
@@ -57,6 +59,9 @@ void Ball::ProcessPaddleCollision(Paddle* paddle) {
 
 	if (!getGlobalBounds().intersects(paddle->getGlobalBounds(), intersection) || isOnPaddle)
 		return;
+
+	if (paddle->isSticky)
+		isOnPaddle = true;
 
 	if (paddle->getPosition().y < getPosition().y) {
 		ReverseSpeedX();
@@ -70,18 +75,8 @@ void Ball::ProcessPaddleCollision(Paddle* paddle) {
 	//ball collides with horizontal surface
 	ReverseSpeedY();
 	setPosition(getPosition().x, paddle->getPosition().y - getSize().y);
-
-
-	/*float ballLeft = GetLeftBorder();
-	float ballTop = GetTopBorder();
-	float ballRight = GetRightBorder();
-	float ballLower = GetLowerBorder();
-
-	float paddleLeft = paddle->GetLeftBorder();
-	float paddleTop = paddle->GetTopBorder();
-	float paddleRight = paddle->GetRightBorder();
-	float paddleLower = paddle->GetLowerBorder();*/
-
+	/*if (getPosition().x < paddle->GetLeftBorder() + paddle->getSize().x / 4.f || getPosition().x > paddle->GetRightBorder() - paddle->getSize().x / 4.f)
+		ReverseSpeedX();*/
 }
 
 void Ball::ProcessBlockCollision(Block* block) {
@@ -121,8 +116,14 @@ void Ball::ProcessBlockCollision(Block* block) {
 }
 
 void Ball::AccelerateBall(float accelerationCoefficient) {
-	std::cout << this->speedProjection.x << std::endl;
 	if (abs(speedProjection.x * accelerationCoefficient) >= MAX_PROJ_MODUL || abs(speedProjection.y * accelerationCoefficient) >= MAX_PROJ_MODUL)
 		return;
 	speedProjection *= accelerationCoefficient;
+}
+
+bool Ball::BallIsActive(int windowHeight) {
+	if (GetTopBorder() > windowHeight)
+		return false;
+
+	return true;
 }

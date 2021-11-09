@@ -21,7 +21,7 @@ class Map{
 	static const int NUM_OF_COLUMNS = 10;
 	static const int NUM_OF_WALL_BLOCKS = 6;
 
-	static const int VERTICAL_INTERVAL = 4;//8
+	static const int VERTICAL_INTERVAL = 4;
 	static const int HORIZONTAL_INTERVAL = 4;
 
 	static const int BLOCK_WIDTH = 89;
@@ -53,6 +53,8 @@ public:
 
 	sf::FloatRect GetRectangle() const;
 	sf::Vector2i GetMapSize()const;
+
+	HelthNum CheckHelthNum(sf::Vector2i& positionOnMap);
 
 	void DisplayMap(sf::RenderWindow& window);
 };

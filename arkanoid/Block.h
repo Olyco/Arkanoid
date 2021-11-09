@@ -1,6 +1,5 @@
 #pragma once
 #include "Object.h"
-#include "Bonus.h"
 
 enum class Color {
 	PURPLE,
@@ -15,6 +14,8 @@ enum class BonusType {
 	CHANGE_BALL_SPEED,
 	BOTTOM_HELPER,
 	STICKY_PADDLE,
+    CHANGE_BALL_TRAJECTORY,
+	SECOND_BALL,
 	NUM_OF_TYPES,
 	VOID, //when there is no bonus
 };
@@ -33,27 +34,26 @@ public:
 
 	Block(int curX, int curY);
 	void SetBlockTexture(Color color, int helthLevel);
-	virtual float CollisionProcessing(Bonus** bonus, BonusType type, Object* object) = 0; //returns the acceleration coefficient
-	Bonus* GenerateBonus(BonusType type, Object* object);
+	virtual float CollisionProcessing(BonusType type, Object* object) = 0; //returns the acceleration coefficient
 };
 
 class Wall : public Block {
 public:
 	Wall(int curX, int curY) : Block(curX, curY) {};
-	float CollisionProcessing(Bonus** bonus, BonusType type, Object* object)override { return 0.f; };
+	float CollisionProcessing(BonusType type, Object* object)override { return 0.f; };
 };
 
 class OrdinaryBlock : public Block {
 public:
 	OrdinaryBlock(int curX, int curY) : Block(curX, curY) {};
-	float CollisionProcessing(Bonus** bonus, BonusType type, Object* object)override;
+	float CollisionProcessing(BonusType type, Object* object)override;
 };
 
 class AcceleratingBlock : public OrdinaryBlock {
 	const float accelerationCoefficient = 1.1f;
 public:
 	AcceleratingBlock(int curX, int curY) : OrdinaryBlock(curX, curY) {};
-	float CollisionProcessing(Bonus** bonus, BonusType type, Object* object)override;
+	float CollisionProcessing(BonusType type, Object* object)override;
 };
 
 class BlockWithHealth : public Block {
@@ -61,5 +61,5 @@ class BlockWithHealth : public Block {
 	int curHelthLevel;
 public:
 	BlockWithHealth(int curX, int curY, int helthLevel) : maxHelthLevel(helthLevel), curHelthLevel(helthLevel), Block(curX, curY) {};
-	float CollisionProcessing(Bonus** bonus, BonusType type, Object* object)override;
+	float CollisionProcessing(BonusType type, Object* object)override;
 };
